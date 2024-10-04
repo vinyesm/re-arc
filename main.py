@@ -100,6 +100,7 @@ def generate_dataset(
     pbar = tqdm.tqdm(enumerate(keys), desc=desc, position=0, leave=True, total=k)
     metadata = dict()
     for i, key in pbar:
+        print(key)
         generator = generators_mapper[key]
         verifier = verifiers_mapper[key]
         seen = set()
@@ -163,19 +164,21 @@ def demo_dataset(
                 original_task = json.load(fp)
             with open(f'{folder}/tasks/{key}.json', 'r') as fp:
                 generated_task = json.load(fp)
+            m = len(generated_task)
+            assert 2*n <= m
             original_task = [format_example(example) for example in original_task['train'] + original_task['test']]
-            generated_task = [format_example(example) for example in generated_task[:10*n]]
-            difficulties = metadata[key]['pso_difficulties'][:9*n]
+            generated_task = [format_example(example) for example in generated_task[:m]]
+            difficulties = metadata[key]['pso_difficulties'][:m]
             generated_task = [ex for ex, diff in sorted(zip(generated_task, difficulties), key=lambda item: item[1])]
-            easy = generated_task[1*n:2*n]
-            hard = generated_task[8*n:9*n]
+            easy = generated_task[0:n]
+            hard = generated_task[m-n:m]
             print(key)
-            print('original:')
-            plot_task(original_task)
-            print('generated (easy):')
-            plot_task(easy)
-            print('generated (hard):')
-            plot_task(hard)
+            # print('original:')
+            plot_task(original_task, title=f"out/{key}_original", save_to_png=True)
+            # print('generated (easy):')
+            plot_task(easy, title=f"out/{key}_generated_easy", save_to_png=True)
+            # print('generated (hard):')
+            plot_task(hard, title=f"out/{key}_generated_hard", save_to_png=True)
 
 
 def evaluate_verifiers_on_original_tasks() -> None:

@@ -95,7 +95,8 @@ def format_task(
 
 def plot_task(
     task: List[dict],
-    title: str = None
+    title: str = None,
+    save_to_png: bool = False,
 ) -> None:
     """
     displays a task
@@ -110,14 +111,27 @@ def plot_task(
     width = len(task)
     figure_size = (width * 3, height * 3)
     figure, axes = plt.subplots(height, width, figsize=figure_size)
-    for column, example in enumerate(task):
-        axes[0, column].imshow(example['input'], **args)
-        axes[1, column].imshow(example['output'], **args)
-        axes[0, column].axis('off')
-        axes[1, column].axis('off')
+    assert len(task) > 0
+    if len(task) == 1: # if only one subplot treat axes as 1D
+        axes[0].imshow(task[0]['input'], **args)
+        axes[1].imshow(task[0]['output'], **args)
+        axes[0].axis('off')
+        axes[1].axis('off')
+    else:
+        for column, example in enumerate(task):
+            axes[0, column].imshow(example['input'], **args)
+            axes[1, column].imshow(example['output'], **args)
+            axes[0, column].axis('off')
+            axes[1, column].axis('off')
     if title is not None:
         figure.suptitle(title, fontsize=20)
     plt.subplots_adjust(wspace=0.1, hspace=0.1)
+    if save_to_png:
+        if title is not None:
+            plt.savefig(f'{title}.png')
+        else:
+            plt.savefig('image.png')
+    else:
     plt.show()
 
 
