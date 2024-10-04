@@ -132,7 +132,7 @@ def plot_task(
         else:
             plt.savefig('image.png')
     else:
-    plt.show()
+        plt.show()
 
 
 def fix_bugs(
